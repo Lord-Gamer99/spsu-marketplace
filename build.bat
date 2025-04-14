@@ -1,0 +1,17 @@
+off
+echo
+Building
+React
+app...
+cd
+Client
+npm
+run
+build
+echo
+Starting
+server...
+cd
+..
+npm
+start

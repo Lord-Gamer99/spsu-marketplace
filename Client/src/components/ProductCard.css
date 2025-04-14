@@ -1,0 +1,243 @@
+.card {
+  width: 100%;
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+}
+
+.card img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 5px 5px 0 0;
+}
+
+.zoom-img {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+}
+
+.zoom-img::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 80%, rgba(0,0,0,0.1) 100%);
+  z-index: 1;
+}
+
+.zoom-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.card:hover .zoom-img img {
+  transform: scale(1.1);
+}
+
+.card-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #fde02f;
+  color: #001f38;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  z-index: 10;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.delete-product-btn {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 30px;
+  height: 30px;
+  background-color: rgba(255, 59, 48, 0.9);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 20px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.delete-product-btn:hover {
+  background-color: #ff3b30;
+  transform: scale(1.1);
+}
+
+.text {
+  padding: 15px;
+}
+
+.text h2 {
+  font-size: 16px;
+  color: #001f38;
+  margin: 0 0 8px;
+  font-weight: 600;
+  line-height: 1.3;
+  height: 40px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.text h2:hover {
+  color: #fde02f;
+}
+
+.text p {
+  font-size: 14px;
+  color: #777;
+  margin: 0 0 12px;
+  height: 40px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.rating {
+  color: #fde02f;
+  font-size: 14px;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.cost {
+  font-size: 18px;
+  color: #001f38;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.card-box {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.card-button {
+  flex: 1;
+  display: block;
+  text-align: center;
+  background-color: #fde02f;
+  color: #001f38;
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.card-button:hover {
+  background-color: #001f38;
+  color: #fff;
+}
+
+.card-button.outline {
+  background-color: transparent;
+  color: #001f38;
+  border: 1px solid #001f38;
+}
+
+.card-button.outline:hover {
+  background-color: #001f38;
+  color: #fff;
+}
+
+.wishlist-btn.active {
+  background-color: #fff0f0;
+  color: #ff3b30;
+  border-color: #ff3b30;
+}
+
+.wishlist-btn.active:hover {
+  background-color: #ff3b30;
+  color: white;
+}
+
+.buy-now-btn {
+  width: 100%;
+  padding: 10px 0;
+  background-color: #001f38;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 14px;
+}
+
+.buy-now-btn:hover {
+  background-color: #003456;
+  transform: translateY(-2px);
+}
+
+/* Media Queries */
+@media (max-width: 1200px) {
+  .card {
+    width: 250px;
+  }
+}
+
+@media (max-width: 992px) {
+  .card {
+    width: 230px;
+  }
+}
+
+@media (max-width: 768px) {
+  .card {
+    width: 220px;
+  }
+}
+
+@media (max-width: 576px) {
+  .card {
+    width: 100%;
+    max-width: 300px;
+    margin: 15px auto;
+  }
+  
+  .zoom-img {
+    height: 200px;
+  }
+} 

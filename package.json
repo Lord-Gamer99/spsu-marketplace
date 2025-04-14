@@ -1,0 +1,34 @@
+{
+  "name": "spsu-marketplace",
+  "version": "1.0.0",
+  "description": "Full-stack marketplace application for SPSU",
+  "main": "index.js",
+  "scripts": {
+    "start": "node Server/server.js",
+    "server": "nodemon Server/server.js",
+    "client": "cd Client && npm start",
+    "build": "cd Client && npm run build",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "install-all": "npm install && cd Client && npm install && cd ../Server && npm install",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix Client && npm run build --prefix Client"
+  },
+  "dependencies": {
+    "@cloudinary/react": "^1.14.1",
+    "@cloudinary/url-gen": "^1.21.0",
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^4.18.2",
+    "firebase": "^11.6.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^7.5.3",
+    "react-icons": "^5.5.0",
+    "concurrently": "^8.2.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

@@ -1,0 +1,207 @@
+.banner {
+  background-image: url("https://res.cloudinary.com/durayngkx/image/upload/v1699608563/ampxm5kazfvshjr3wjv1.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 100%;
+  height: 100vh;
+  text-align: center;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 80px; /* Add space for fixed navbar */
+  transform: translateZ(0);
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+.banner::before {
+  content: "";
+  position: absolute;
+  display: block;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.4); /* Slightly darker overlay for better visibility */
+  will-change: opacity;
+}
+
+.banner-text-item {
+  position: relative; /* Changed from absolute to relative */
+  z-index: 1;
+  width: 100%;
+  max-width: 1200px;
+  text-align: center;
+  display: flex;
+  flex-flow: column wrap;
+  justify-content: center;
+  align-items: center;
+  padding: 0 20px;
+  transform: translateZ(0);
+}
+
+.banner-heading {
+  margin-bottom: 30px;
+}
+
+.banner-heading h1 {
+  font-size: 5rem;
+  font-weight: normal;
+  color: #fde02f;
+  font-family: Satisfy;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  margin: 0;
+  line-height: 1.2;
+  transform: translateZ(0);
+}
+
+.banner-text-item .form {
+  flex: 1;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(5px);
+  border-radius: 10px;
+  width: 80%;
+  max-width: 800px;
+  padding: 20px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  will-change: transform;
+  gap: 10px;
+}
+
+.search-input-container {
+  display: flex;
+  flex: 3;
+  position: relative;
+  width: 100%;
+}
+
+.category-select {
+  position: relative;
+  padding: 0 15px;
+  height: 52px;
+  border: none;
+  border-radius: 5px 0 0 5px;
+  background-color: #001f38;
+  color: white;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  outline: none;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  min-width: 130px;
+  transition: all 0.3s ease;
+}
+
+.category-select:hover {
+  background-color: #002d4d;
+}
+
+.search-input {
+  flex: 1;
+  height: 52px;
+  border: none;
+  border-radius: 0 5px 5px 0;
+  padding: 0 15px;
+  font-size: 16px;
+  font-family: 'Roboto', sans-serif;
+  outline: none;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.banner-text-item .buy {
+  flex: 1;
+  min-width: 120px;
+  height: 52px;
+  text-decoration: none;
+  color: #001f38;
+  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 1px;
+  cursor: pointer;
+  background-color: #fde02f;
+  border: none;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+  font-family: "Barlow Condensed", sans-serif;
+  will-change: transform, background-color;
+}
+
+.banner-text-item .buy:hover {
+  background-color: #001f38;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+/* Media Queries */
+@media (max-width: 1200px) {
+  .banner-heading h1 {
+    font-size: 4rem;
+  }
+  
+  .banner-text-item .form {
+    width: 90%;
+  }
+}
+
+@media (max-width: 992px) {
+  .banner {
+    margin-top: 70px; /* Adjust for smaller navbar */
+  }
+  
+  .banner-heading h1 {
+    font-size: 3.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .banner-heading h1 {
+    font-size: 3rem;
+  }
+  
+  .banner-text-item .form {
+    padding: 15px;
+  }
+  
+  .category-select {
+    min-width: 100px;
+    font-size: 14px;
+    padding: 0 10px;
+  }
+  
+  .search-input, 
+  .banner-text-item .buy {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 576px) {
+  .banner-heading h1 {
+    font-size: 2.5rem;
+  }
+  
+  .banner-text-item .form {
+    flex-direction: column;
+    width: 95%;
+    gap: 10px;
+  }
+  
+  .search-input-container {
+    width: 100%;
+  }
+  
+  .category-select {
+    min-width: 90px;
+  }
+  
+  .banner-text-item .buy {
+    width: 100%;
+  }
+} 

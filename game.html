@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hill Climb Racing Game</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      background-color: #87CEEB;
+    }
+    canvas {
+      display: block;
+      margin: auto;
+      background: linear-gradient(to top, #654321, #8B4513);
+    }
+    .game-info {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      color: #fff;
+      font-size: 18px;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 10px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-info">
+    <p>Use Arrow Keys: Up to accelerate, Left/Right to balance</p>
+    <p>Score: <span id="score">0</span></p>
+  </div>
+  <canvas id="gameCanvas"></canvas>
+
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // Game variables
+    const groundHeight = 80;
+    const car = {
+      x: 100,
+      y: canvas.height - groundHeight - 40,
+      width: 60,
+      height: 30,
+      color: "red",
+      speed: 0,
+      gravity: 0.5,
+      jumpForce: -10,
+      onGround: true,
+      rotation: 0,
+    };
+
+    const wheels = [
+      { xOffset: -20, yOffset: 15, radius: 12, color: "black" },
+      { xOffset: 20, yOffset: 15, radius: 12, color: "black" },
+    ];
+
+    const hills = [];
+    const hillWidth = 50;
+    const maxHillHeight = 100;
+    const scoreElement = document.getElementById("score");
+    let score = 0;
+
+    for (let i = 0; i < canvas.width / hillWidth + 2; i++) {
+      hills.push(
+        Math.random() * maxHillHeight + (canvas.height - groundHeight - 40)
+      );
+    }
+
+    let gameSpeed = 3;
+    let keys = {};
+
+    // Draw car
+    function drawCar() {
+      ctx.save();
+      ctx.translate(car.x, car.y);
+      ctx.rotate(car.rotation);
+      ctx.fillStyle = car.color;
+      ctx.fillRect(-car.width / 2, -car.height / 2, car.width, car.height);
+      ctx.restore();
+
+      wheels.forEach((wheel) => {
+        ctx.beginPath();
+        ctx.arc(
+          car.x + wheel.xOffset,
+          car.y + wheel.yOffset,
+          wheel.radius,
+          0,
+          Math.PI * 2
+        );
+        ctx.fillStyle = wheel.color;
+        ctx.fill();
+        ctx.closePath();
+      });
+    }
+
+    // Draw hills
+    function drawHills() {
+      ctx.beginPath();
+      ctx.moveTo(0, canvas.height);
+      for (let i = 0; i < hills.length; i++) {
+        ctx.lineTo(i * hillWidth, hills[i]);
+      }
+      ctx.lineTo(canvas.width, canvas.height);
+      ctx.closePath();
+      ctx.fillStyle = "green";
+      ctx.fill();
+    }
+
+    // Update hills
+    function updateHills() {
+      for (let i = 0; i < hills.length; i++) {
+        hills[i] -= gameSpeed;
+      }
+
+      if (hills[0] + hillWidth < 0) {
+        hills.shift();
+        hills.push(Math.random() * maxHillHeight + (canvas.height - groundHeight - 40));
+        score++;
+        scoreElement.textContent = score;
+      }
+    }
+
+    // Update car
+    function updateCar() {
+      if (keys["ArrowUp"] && car.onGround) {
+        car.speed = car.jumpForce;
+        car.onGround = false;
+      }
+
+      if (keys["ArrowRight"]) {
+        car.rotation += 0.05;
+      }
+
+      if (keys["ArrowLeft"]) {
+        car.rotation -= 0.05;
+      }
+
+      car.speed += car.gravity;
+      car.y += car.speed;
+
+      // Check collision with ground
+      if (car.y >= canvas.height - groundHeight - car.height / 2) {
+        car.y = canvas.height - groundHeight - car.height / 2;
+        car.speed = 0;
+        car.onGround = true;
+      }
+    }
+
+    // Game loop
+    function gameLoop() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      updateHills();
+      drawHills();
+
+      updateCar();
+      drawCar();
+
+      requestAnimationFrame(gameLoop);
+    }
+
+    // Key listeners
+    window.addEventListener("keydown", (e) => {
+      keys[e.key] = true;
+    });
+
+    window.addEventListener("keyup", (e) => {
+      keys[e.key] = false;
+    });
+
+    gameLoop();
+  </script>
+</body>
+</html>

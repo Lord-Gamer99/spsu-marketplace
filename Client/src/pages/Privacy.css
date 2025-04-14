@@ -1,0 +1,140 @@
+.privacy-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  padding-top: 100px;
+}
+
+.privacy-hero {
+  background-color: #f8f9fa;
+  padding: 3rem 2rem;
+  text-align: center;
+  margin-bottom: 2rem;
+  border-radius: 8px;
+}
+
+.privacy-hero h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: #1a1a1a;
+}
+
+.privacy-hero p {
+  font-size: 1rem;
+  color: #666;
+  display: none;
+}
+
+.privacy-container {
+  display: flex;
+  gap: 2rem;
+  padding: 0 1rem;
+}
+
+.privacy-navigation {
+  flex: 0 0 250px;
+  position: sticky;
+  top: 2rem;
+  align-self: flex-start;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  max-height: calc(100vh - 4rem);
+  overflow-y: auto;
+}
+
+.privacy-navigation ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.privacy-navigation li {
+  margin-bottom: 0.75rem;
+}
+
+.privacy-navigation a {
+  text-decoration: none;
+  color: #333;
+  font-size: 0.9rem;
+  display: block;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.privacy-navigation a:hover {
+  background-color: #e9ecef;
+  color: #007bff;
+}
+
+.privacy-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.privacy-content section {
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #eee;
+}
+
+.privacy-content section:last-child {
+  border-bottom: none;
+}
+
+.privacy-content h2 {
+  font-size: 1.75rem;
+  margin-bottom: 1.5rem;
+  color: #1a1a1a;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.privacy-content p {
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.privacy-content ul {
+  padding-left: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.privacy-content li {
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+
+.privacy-content strong {
+  font-weight: 600;
+  color: #333;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .privacy-container {
+    flex-direction: column;
+  }
+  
+  .privacy-navigation {
+    flex: initial;
+    position: static;
+    width: 100%;
+    margin-bottom: 2rem;
+  }
+  
+  .privacy-hero {
+    padding: 2rem 1rem;
+  }
+  
+  .privacy-hero h1 {
+    font-size: 2rem;
+  }
+  
+  .privacy-content h2 {
+    font-size: 1.5rem;
+  }
+} 
