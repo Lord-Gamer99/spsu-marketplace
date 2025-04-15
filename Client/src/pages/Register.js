@@ -3,6 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FaUser, FaLock, FaEnvelope, FaPhone, FaUserPlus } from 'react-icons/fa';
 import './Auth.css';
 
+// API URL from environment variable
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -127,7 +130,7 @@ const Register = () => {
       setLoading(true);
       setError('');
       
-      const response = await fetch('http://localhost:5000/api/users/register', {
+      const response = await fetch(`${API_URL}/api/users/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

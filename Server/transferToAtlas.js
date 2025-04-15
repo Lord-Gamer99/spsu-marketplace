@@ -13,23 +13,38 @@ const Wishlist = require('./models/wishlistModel');
 
 const transferData = async () => {
   try {
-    // Connect to MongoDB Atlas
-    const atlasURI = 'mongodb+srv://lordgameranurag:987654321Anu@cluster0.lfpl7c7.mongodb.net/SPSU_Marketplace?retryWrites=true&w=majority';
-    const atlasConn = await mongoose.createConnection(atlasURI, {
+    // Connect to local MongoDB
+    const localURI = process.env.MONGODB_URI; // Use Atlas URI instead of local
+    const localConn = await mongoose.createConnection(localURI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      serverSelectionTimeoutMS: 5000,
-      socketTimeoutMS: 45000,
-      connectTimeoutMS: 10000,
-      retryWrites: true,
-      retryReads: true,
       serverApi: {
         version: '1',
         strict: true,
         deprecationErrors: true,
       }
     });
-    console.log('✅ Connected to MongoDB Atlas');
+    console.log('✅ Connected to MongoDB Atlas (source)');
+
+    // Connect to MongoDB Atlas (same database, but we keep the code structure for future updates)
+    const atlasURI = process.env.MONGODB_URI;
+    const atlasConn = await mongoose.createConnection(atlasURI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      serverApi: {
+        version: '1',
+        strict: true,
+        deprecationErrors: true,
+      }
+    });
+    console.log('✅ Connected to MongoDB Atlas (destination)');
+
+    // Register models for local connection
+    const LocalUser = localConn.model('User', User.schema);
+    const LocalProduct = localConn.model('Product', Product.schema);
+    const LocalCart = localConn.model('Cart', Cart.schema);
+    const LocalOrder = localConn.model('Order', Order.schema);
+    const LocalWishlist = localConn.model('Wishlist', Wishlist.schema);
 
     // Register models for Atlas connection
     const AtlasUser = atlasConn.model('User', User.schema);
@@ -38,72 +53,45 @@ const transferData = async () => {
     const AtlasOrder = atlasConn.model('Order', Order.schema);
     const AtlasWishlist = atlasConn.model('Wishlist', Wishlist.schema);
 
-    // Initialize collections in Atlas
-    console.log('Initializing collections in Atlas...');
+    // Transfer Users
+    console.log('Transferring Users...');
+    const users = await LocalUser.find({});
+    await AtlasUser.deleteMany({});
+    await AtlasUser.insertMany(users);
+    console.log(`✅ Transferred ${users.length} users`);
 
-    // Initialize Users collection
-    console.log('Initializing Users collection...');
-    const userCount = await AtlasUser.countDocuments();
-    let adminUser;
-    if (userCount === 0) {
-      adminUser = await AtlasUser.create({
-        name: 'Admin User',
-        email: 'admin@example.com',
-        password: 'admin123',
-        isAdmin: true
-      });
-      console.log('✅ Created admin user');
-    } else {
-      adminUser = await AtlasUser.findOne({ isAdmin: true });
-      console.log(`✅ Users collection already has ${userCount} documents`);
-    }
+    // Transfer Products
+    console.log('Transferring Products...');
+    const products = await LocalProduct.find({});
+    await AtlasProduct.deleteMany({});
+    await AtlasProduct.insertMany(products);
+    console.log(`✅ Transferred ${products.length} products`);
 
-    // Initialize Products collection
-    console.log('Initializing Products collection...');
-    const productCount = await AtlasProduct.countDocuments();
-    if (productCount === 0 && adminUser) {
-      await AtlasProduct.create({
-        name: 'Sample Laptop',
-        description: 'This is a sample laptop product for testing',
-        price: 999.99,
-        category: 'Electronics',
-        condition: 'New',
-        mainImage: 'https://example.com/sample-laptop.jpg',
-        seller: adminUser._id,
-        sellerName: adminUser.name,
-        stock: 10,
-        isAvailable: true,
-        images: [
-          {
-            url: 'https://example.com/sample-laptop.jpg',
-            altText: 'Sample Laptop'
-          }
-        ]
-      });
-      console.log('✅ Created sample product');
-    } else {
-      console.log(`✅ Products collection already has ${productCount} documents`);
-    }
+    // Transfer Carts
+    console.log('Transferring Carts...');
+    const carts = await LocalCart.find({});
+    await AtlasCart.deleteMany({});
+    await AtlasCart.insertMany(carts);
+    console.log(`✅ Transferred ${carts.length} carts`);
 
-    // Initialize Carts collection
-    console.log('Initializing Carts collection...');
-    const cartCount = await AtlasCart.countDocuments();
-    console.log(`✅ Carts collection has ${cartCount} documents`);
+    // Transfer Orders
+    console.log('Transferring Orders...');
+    const orders = await LocalOrder.find({});
+    await AtlasOrder.deleteMany({});
+    await AtlasOrder.insertMany(orders);
+    console.log(`✅ Transferred ${orders.length} orders`);
 
-    // Initialize Orders collection
-    console.log('Initializing Orders collection...');
-    const orderCount = await AtlasOrder.countDocuments();
-    console.log(`✅ Orders collection has ${orderCount} documents`);
+    // Transfer Wishlists
+    console.log('Transferring Wishlists...');
+    const wishlists = await LocalWishlist.find({});
+    await AtlasWishlist.deleteMany({});
+    await AtlasWishlist.insertMany(wishlists);
+    console.log(`✅ Transferred ${wishlists.length} wishlists`);
 
-    // Initialize Wishlists collection
-    console.log('Initializing Wishlists collection...');
-    const wishlistCount = await AtlasWishlist.countDocuments();
-    console.log(`✅ Wishlists collection has ${wishlistCount} documents`);
-
-    console.log('🎉 Atlas database initialization completed successfully!');
+    console.log('🎉 Data transfer completed successfully!');
     process.exit(0);
   } catch (error) {
-    console.error('❌ Error during initialization:', error.message);
+    console.error('❌ Error during data transfer:', error.message);
     process.exit(1);
   }
 };

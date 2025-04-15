@@ -3,6 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FaEnvelope, FaKey, FaArrowLeft, FaCheck } from 'react-icons/fa';
 import './Auth.css';
 
+// API URL from environment variable
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
@@ -100,9 +103,8 @@ const ForgotPassword = () => {
 
   // Helper function to get base API URL
   const getApiUrl = () => {
-    // In all environments, use relative URL for API
-    // This ensures it works on all devices as long as they can reach the server
-    return '/api';
+    // Use environment variable for API URL with /api path
+    return `${API_URL}/api`;
   };
 
   const sendResetLink = async () => {
