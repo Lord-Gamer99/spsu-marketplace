@@ -16,12 +16,18 @@ const authUser = async (req, res) => {
     const user = await User.findOne({ email }).select('+password');
 
     if (user && (await user.matchPassword(password))) {
+      // Generate token
+      const token = generateToken(user._id);
+      
+      // Send response with separate user and token properties
       res.json({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        token: generateToken(user._id),
+        user: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
+        token: token
       });
     } else {
       res.status(401).json({
@@ -67,12 +73,18 @@ const registerUser = async (req, res) => {
     });
 
     if (user) {
+      // Generate token
+      const token = generateToken(user._id);
+      
+      // Send response with separate user and token properties
       res.status(201).json({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        token: generateToken(user._id),
+        user: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
+        token: token
       });
     } else {
       res.status(400).json({
@@ -160,16 +172,21 @@ const updateUserProfile = async (req, res) => {
       }
 
       const updatedUser = await user.save();
+      
+      // Generate new token
+      const token = generateToken(updatedUser._id);
 
       res.json({
-        _id: updatedUser._id,
-        name: updatedUser.name,
-        email: updatedUser.email,
-        phone: updatedUser.phone,
-        address: updatedUser.address,
-        role: updatedUser.role,
-        profilePicture: updatedUser.profilePicture,
-        token: generateToken(updatedUser._id),
+        user: {
+          _id: updatedUser._id,
+          name: updatedUser.name,
+          email: updatedUser.email,
+          phone: updatedUser.phone,
+          address: updatedUser.address,
+          role: updatedUser.role,
+          profilePicture: updatedUser.profilePicture,
+        },
+        token: token
       });
     } else {
       res.status(404).json({

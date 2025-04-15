@@ -17,6 +17,25 @@ dotenv.config();
 // Initialize express
 const app = express();
 
+// Debug logging middleware
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  console.log('Headers:', JSON.stringify(req.headers, null, 2));
+  
+  if (req.body && Object.keys(req.body).length > 0) {
+    console.log('Body:', JSON.stringify(req.body, null, 2));
+  }
+  
+  // Track response
+  const originalSend = res.send;
+  res.send = function(data) {
+    console.log(`[${new Date().toISOString()}] Response for ${req.method} ${req.url} - Status: ${res.statusCode}`);
+    return originalSend.apply(res, arguments);
+  };
+  
+  next();
+});
+
 // Middleware
 app.use(cors({
   origin: '*', // Allow requests from any domain
@@ -26,24 +45,41 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// MongoDB Connection with improved error handling and retry logic
+// MongoDB Atlas Connection with improved error handling and retry logic
 const connectDB = async () => {
   try {
-    const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/SPSU_Marketplace';
-    console.log('Connecting to MongoDB at:', mongoURI);
+    if (!process.env.MONGODB_URI) {
+      throw new Error('MONGODB_URI is not defined in environment variables');
+    }
+
+    const mongoURI = process.env.MONGODB_URI;
+    console.log('Connecting to MongoDB Atlas...');
     
     const options = {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
-      family: 4, // Use IPv4, skip trying IPv6
-      // Enable strict validation for all models
-      autoIndex: true, // Build indexes
-      autoCreate: true // Auto create collections
+      serverApi: {
+        version: '1',
+        strict: true,
+        deprecationErrors: true,
+      },
+      serverSelectionTimeoutMS: 5000,
+      family: 4,
+      autoIndex: true,
+      autoCreate: true,
+      maxPoolSize: 10, // Maximum number of connections in the connection pool
+      minPoolSize: 5,  // Minimum number of connections in the connection pool
+      socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
+      connectTimeoutMS: 10000 // Give up initial connection after 10 seconds
     };
     
+    // Close any existing connections
+    if (mongoose.connection.readyState !== 0) {
+      await mongoose.connection.close();
+    }
+    
     await mongoose.connect(mongoURI, options);
-    console.log('✅ MongoDB Connected Successfully!');
+    console.log('✅ MongoDB Atlas Connected Successfully!');
     
     // Log available collections
     const collections = await mongoose.connection.db.listCollections().toArray();
@@ -52,13 +88,46 @@ const connectDB = async () => {
       console.log(`- ${collection.name}`);
     });
     
+    // Set up connection event handlers
+    mongoose.connection.on('error', (err) => {
+      console.error('❌ MongoDB Connection Error:', err);
+      console.error('Error details:', {
+        name: err.name,
+        message: err.message,
+        code: err.code,
+        codeName: err.codeName
+      });
+    });
+    
+    mongoose.connection.on('disconnected', () => {
+      console.log('⚠️ MongoDB disconnected. Attempting to reconnect...');
+      setTimeout(connectDB, 5000);
+    });
+    
+    mongoose.connection.on('reconnected', () => {
+      console.log('✅ MongoDB reconnected successfully!');
+    });
+    
   } catch (error) {
     console.error('❌ MongoDB Connection Error:', error.message);
+    console.error('Error details:', {
+      name: error.name,
+      message: error.message,
+      code: error.code,
+      codeName: error.codeName
+    });
     
-    // Print more detailed error information
-    if (error.name === 'MongoServerSelectionError') {
-      console.error('Cannot connect to MongoDB server. Please check if MongoDB is running.');
-      console.error('Try starting MongoDB using: mongod --dbpath=C:\\data\\db');
+    if (error.message.includes('bad auth')) {
+      console.error('Authentication failed. Please check:');
+      console.error('1. Your MongoDB Atlas username and password are correct');
+      console.error('2. Your database user has proper permissions');
+      console.error('3. The password contains no special characters that need URL encoding');
+      console.error('4. The database name in the connection string is correct');
+    } else if (error.name === 'MongoServerSelectionError') {
+      console.error('Cannot connect to MongoDB Atlas. Please check:');
+      console.error('1. Your connection string is correct');
+      console.error('2. Your IP is whitelisted in MongoDB Atlas');
+      console.error('3. Your database user has proper permissions');
     }
     
     // Retry connection after 5 seconds
@@ -67,7 +136,7 @@ const connectDB = async () => {
   }
 };
 
-// Connect to MongoDB
+// Connect to MongoDB Atlas
 connectDB();
 
 // In-memory OTP storage
@@ -83,6 +152,45 @@ app.use('/api/wishlist', wishlistRoutes);
 // Add a simple health check endpoint that requires no auth
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', serverTime: new Date().toISOString() });
+});
+
+// Add a debug route to check MongoDB connection
+app.get('/api/debug/db', async (req, res) => {
+  try {
+    // Check MongoDB connection
+    if (mongoose.connection.readyState === 1) {
+      // Get collection names
+      const collections = await mongoose.connection.db.listCollections().toArray();
+      
+      // Count documents in each collection
+      const collectionStats = {};
+      for (const collection of collections) {
+        const count = await mongoose.connection.db.collection(collection.name).countDocuments();
+        collectionStats[collection.name] = count;
+      }
+      
+      res.json({
+        success: true,
+        message: 'MongoDB connected',
+        connectionState: 'Connected',
+        database: mongoose.connection.db.databaseName,
+        collections: collectionStats
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        message: 'MongoDB not connected',
+        connectionState: mongoose.STATES[mongoose.connection.readyState]
+      });
+    }
+  } catch (error) {
+    console.error('Debug route error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error checking MongoDB connection',
+      error: error.message
+    });
+  }
 });
 
 // Serve static files from the React build directory
@@ -270,4 +378,4 @@ app.listen(PORT, HOST, () => {
   console.log(`✅ Server running on port ${PORT}`);
   console.log(`🌐 Server accessible at: http://${HOST === '0.0.0.0' ? 'localhost' : HOST}:${PORT}/`);
   console.log(`📱 For mobile access, use your computer's IP address with port ${PORT}`);
-}); 
+});

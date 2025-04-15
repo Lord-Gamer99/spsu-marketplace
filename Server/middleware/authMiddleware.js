@@ -21,19 +21,30 @@ const protect = async (req, res, next) => {
 
       // Find user by id and remove password from the result
       req.user = await User.findById(decoded.id).select('-password');
-
+      
+      if (!req.user) {
+        return res.status(401).json({
+          success: false,
+          message: 'User not found',
+        });
+      }
+      
+      console.log(`[AUTH] User authenticated: ${req.user._id} (${req.user.name})`);
       next();
+      return;
     } catch (error) {
-      console.error(error);
-      res.status(401).json({
+      console.error('[AUTH] Token verification failed:', error.message);
+      return res.status(401).json({
         success: false,
         message: 'Not authorized, token failed',
+        error: error.message,
       });
     }
   }
 
   if (!token) {
-    res.status(401).json({
+    console.error('[AUTH] No token provided in request');
+    return res.status(401).json({
       success: false,
       message: 'Not authorized, no token',
     });

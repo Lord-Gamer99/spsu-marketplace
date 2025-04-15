@@ -17,8 +17,9 @@ const Register = () => {
 
   // Check if user is already logged in
   useEffect(() => {
-    const userInfo = localStorage.getItem('userInfo');
-    if (userInfo) {
+    const user = localStorage.getItem('user');
+    const token = localStorage.getItem('token');
+    if (user && token) {
       navigate('/home'); // Redirect to home if already logged in
     }
   }, [navigate]);
@@ -146,7 +147,13 @@ const Register = () => {
       }
       
       // Save user data and token to localStorage
-      localStorage.setItem('userInfo', JSON.stringify(data));
+      localStorage.setItem('user', JSON.stringify(data.user || data));
+      localStorage.setItem('token', data.token);
+      
+      console.log('Registration successful!', {
+        user: data.user || data,
+        token: data.token
+      });
       
       // Redirect to home page
       navigate('/home');

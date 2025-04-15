@@ -22,6 +22,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
 import ForgotPassword from './pages/ForgotPassword';
+import Debug from './pages/Debug';
 
 // Import context
 import { ProductProvider } from './context/ProductContext';
@@ -33,8 +34,9 @@ const ProtectedRoute = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const userInfo = localStorage.getItem('userInfo');
-    if (userInfo) {
+    const user = localStorage.getItem('user');
+    const token = localStorage.getItem('token');
+    if (user && token) {
       setIsAuthenticated(true);
     }
     setLoading(false);
@@ -57,8 +59,9 @@ const RootRoute = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const userInfo = localStorage.getItem('userInfo');
-    if (userInfo) {
+    const user = localStorage.getItem('user');
+    const token = localStorage.getItem('token');
+    if (user && token) {
       setIsAuthenticated(true);
     }
     setLoading(false);
@@ -77,8 +80,9 @@ const Layout = ({ children }) => {
   const [user, setUser] = useState(null);
   
   useEffect(() => {
-    const userInfo = localStorage.getItem('userInfo');
-    if (userInfo) {
+    const userInfo = localStorage.getItem('user');
+    const token = localStorage.getItem('token');
+    if (userInfo && token) {
       setUser(JSON.parse(userInfo));
     } else {
       setUser(null);
@@ -112,6 +116,9 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
+                
+                {/* Debug page - open access for troubleshooting */}
+                <Route path="/debug" element={<Debug />} />
                 
                 {/* Protected routes - require authentication */}
                 <Route path="/home" element={
